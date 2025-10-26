@@ -27,18 +27,106 @@
     <p class="signup-text">Already have an account? <a href="login.html">Login</a></p>
   </div>
 
+  <!-- Early global error handlers (non-module) so we catch module load / network / SDK errors
+       This runs before the module script and will capture Firebase-denied requests and other errors
+       that may happen while loading or executing the module. It logs to console, shows a small
+       on-page debug banner, and writes the last error to localStorage under 'lastError'. -->
+  <script>
+    (function () {
+      try {
+        const dbg = document.createElement('div');
+        dbg.id = 'debugLog';
+        dbg.style.position = 'fixed';
+        dbg.style.bottom = '0';
+        dbg.style.left = '0';
+        dbg.style.right = '0';
+        dbg.style.maxHeight = '180px';
+        dbg.style.overflow = 'auto';
+        dbg.style.background = 'rgba(0,0,0,0.85)';
+        dbg.style.color = '#fff';
+        dbg.style.fontSize = '12px';
+        dbg.style.padding = '8px';
+        dbg.style.zIndex = '9999';
+        dbg.style.display = 'none';
+        dbg.style.whiteSpace = 'pre-wrap';
+        document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(dbg); });
+
+        function saveLastError(obj) {
+          try { localStorage.setItem('lastError', JSON.stringify(obj)); } catch (e) { /* ignore storage errors */ }
+        }
+
+        function show(msg) {
+          dbg.style.display = 'block';
+          dbg.textContent = msg;
+          console.log('DEBUG-BANNER:', msg);
+        }
+
+        window.addEventListener('error', function (ev) {
+          try {
+            const err = ev.error || ev.message || String(ev);
+            const payload = { type: 'error', message: ev.message || String(err), stack: ev.error && ev.error.stack ? ev.error.stack : null, time: Date.now() };
+            console.error('Global error captured:', ev.error || ev.message || ev);
+            saveLastError(payload);
+            show('Global error: ' + (payload.message || 'see console'));
+          } catch (e) { console.error('Error in global error handler', e); }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function (ev) {
+          try {
+            const reason = ev.reason;
+            const payload = { type: 'unhandledrejection', reason: typeof reason === 'object' ? (reason.message || String(reason)) : String(reason), detail: reason, time: Date.now() };
+            console.error('Unhandled rejection captured:', ev.reason);
+            saveLastError(payload);
+            show('Unhandled rejection: ' + (payload.reason || 'see console'));
+          } catch (e) { console.error('Error in unhandledrejection handler', e); }
+        }, true);
+
+        // Quick helper to show any previously saved error (helps after page reload)
+        try {
+          const prev = localStorage.getItem('lastError');
+          if (prev) {
+            const parsed = JSON.parse(prev);
+            show('Previous error (from lastError): ' + (parsed.message || parsed.reason || JSON.stringify(parsed)));
+          }
+        } catch (e) { /* ignore parse errors */ }
+      } catch (e) {
+        try { console.error('Failed to install global error handlers', e); } catch (ee) { /* ignore */ }
+      }
+    })();
+  </script>
+
   <script type="module">
     // Use the shared firebase-config.js (single initialization)
     import { auth, db, provider, onAuthStateChanged } from './firebase-config.js';
     import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, updateProfile } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
     import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
+    // Fallback redirect mechanism: if we initiated a Google redirect, force redirect to welcome
+    // even if getRedirectResult returns null (e.g., domain not authorized). This avoids getting
+    // stuck on the signup page after the popup flow.
+    const POST_AUTH_REDIRECT_KEY = 'postAuthRedirect';
+    (function () {
+      const hadMarker = localStorage.getItem(POST_AUTH_REDIRECT_KEY);
+      if (hadMarker) {
+        console.debug('postAuthRedirect marker found on load; scheduling fallback redirect to welcome');
+        localStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+        // Give the SDK a moment to resolve getRedirectResult; then force redirect regardless.
+        setTimeout(() => {
+          console.debug('Fallback redirect firing -> welcome.html');
+          window.location.replace('welcome.html');
+        }, 1500);
+      }
+    })();
+
     // Handle Google redirect result (if user came back from Google sign-in)
     (async () => {
+      console.debug("getRedirectResult: start");
       try {
         const result = await getRedirectResult(auth);
+        console.debug("getRedirectResult: resolved", { result });
         if (result) {
           const user = result.user;
+          console.debug("getRedirectResult: user", { uid: user.uid, displayName: user.displayName, email: user.email });
           await setDoc(doc(db, "users", user.uid), {
             name: user.displayName,
             email: user.email,
@@ -47,19 +135,27 @@
           }, { merge: true });
 
           localStorage.setItem("userName", user.displayName);
-          window.location.href = "welcome.html";
+          console.debug("Redirecting to welcome (replace) after getRedirectResult");
+          // Use replace so the signup page is not in history (prevents brief back/flash)
+          window.location.replace("welcome.html");
+        } else {
+          console.debug("getRedirectResult: no result returned");
         }
       } catch (error) {
         console.error("Google redirect error:", error);
+        try { localStorage.setItem('lastError', JSON.stringify({ where: 'getRedirectResult', message: error?.message || String(error), time: Date.now() })); } catch {}
       }
     })();
 
     window.addEventListener("DOMContentLoaded", () => {
       // Redirect if already logged in
+      // If already logged in, go to welcome immediately. Use replace to avoid history push.
       onAuthStateChanged(auth, (user) => {
+        console.debug('onAuthStateChanged fired', { user });
         if (user) {
           localStorage.setItem("userName", user.displayName || localStorage.getItem("userName") || "User");
-          window.location.href = "welcome.html";
+          console.debug("onAuthStateChanged: redirecting to welcome (replace)");
+          window.location.replace("welcome.html");
         }
       });
 
@@ -74,13 +170,16 @@
         if (!name) { alert('Please enter your full name'); return; }
 
         try {
+          console.debug("Email signup: creating user", { email });
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
 
           // Set display name on the Firebase user profile
+          console.debug("Email signup: updating profile", { uid: user.uid, name });
           await updateProfile(user, { displayName: name });
 
           // Save user record in Firestore
+          console.debug("Email signup: writing user doc to firestore", { uid: user.uid });
           await setDoc(doc(db, "users", user.uid), {
             name,
             email,
@@ -88,8 +187,12 @@
           });
 
           localStorage.setItem("userName", name);
-          window.location.href = "welcome.html";
+          console.debug("Email signup: redirecting to welcome (replace)");
+          // Use replace to navigate to welcome without leaving signup in history
+          window.location.replace("welcome.html");
         } catch (error) {
+          console.error('Email signup error', error);
+          try { localStorage.setItem('lastError', JSON.stringify({ where: 'emailSignup', message: error?.message || String(error), time: Date.now() })); } catch {}
           alert(error.message);
         }
       });
@@ -98,8 +201,14 @@
       const googleBtn = document.querySelector(".google-btn");
       googleBtn.addEventListener("click", async () => {
         try {
+          console.debug("Google sign-in button clicked: initiating signInWithRedirect");
+          // Set a flag so that on return we can redirect even if the SDK denies/doesn't yield a result
+          localStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
           await signInWithRedirect(auth, provider);
+          console.debug("signInWithRedirect call finished (should navigate away)");
         } catch (error) {
+          console.error("signInWithRedirect error", error);
+          try { localStorage.setItem('lastError', JSON.stringify({ where: 'signInWithRedirect', message: error?.message || String(error), time: Date.now() })); } catch {}
           alert(error.message);
         }
       });
