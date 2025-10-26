@@ -1,0 +1,160 @@
+/* Root Variables */
+:root {
+  --dark-bg: #0b132b;
+  --box-bg: rgba(20, 28, 48, 0.95);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.2);
+  --accent1: #00d2ff;
+  --accent2: #9200ff;
+  --text-color: #ffffff;
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Body */
+body {
+  background: 
+    linear-gradient(rgba(5, 10, 30, 0.85), rgba(5, 10, 30, 0.95)),
+    url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Signup Container */
+.signup-container {
+  background-color: var(--box-bg);
+  padding: 40px 35px;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.15);
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Heading */
+.signup-container h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 25px;
+  color: var(--text-color);
+}
+
+/* Inputs */
+.signup-container input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.signup-container input:focus {
+  border-color: var(--accent1);
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+}
+
+/* Signup Button */
+.signup-container button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 5px;
+}
+
+.signup-container button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 210, 255, 0.4);
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 10px;
+}
+
+/* Google Button */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.google-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Text below */
+.signup-text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.signup-text a {
+  color: var(--accent1);
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.signup-text a:hover {
+  color: var(--accent2);
+  text-decoration: underline;
+}

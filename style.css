@@ -1,0 +1,142 @@
+:root {
+    /* Color Variables for easy customization */
+    --dark-background: #0d0124;
+    --main-text-color: #ffffff;
+    --subtitle-text-color: #c2c2c2;
+    --gradient-start: #00d2ff; /* Light Cyan/Blue */
+    --gradient-end: #9200ff;   /* Violet/Purple */
+    --badge-bg: #1e0939;       /* Dark Purple/Blue for the badge background */
+    --badge-text: #66e0ff;     /* Light Blue for the badge text */
+}
+
+/* ---------------------------------------------------- */
+/* --- Global & Background Styles (from your code) --- */
+/* ---------------------------------------------------- */
+
+body {
+    margin: 0; 
+    /* The image background is complex, this is a basic approximation */
+    background-color: var(--dark-background); 
+    background-image: 
+        /* Overlay to darken the illustration */
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        /* Placeholder for your actual background image/illustration */
+        url("hero-banner.jpg"); 
+    background-size: cover;
+    background-position: center bottom; /* Adjusted to show more of the illustration */
+    min-height: 100vh; /* Use min-height for full-page coverage */
+    font-family: 'Poppins', sans-serif; /* A better font choice for this style */
+}
+
+.hero {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+    height: 100vh; /* Ensure it takes up full viewport height */
+    color: var(--main-text-color);
+    padding: 0 20px; 
+    /* If you have a complex illustration, you might need a dark overlay here too */
+    z-index: 10;
+    position: relative;
+}
+
+/* ---------------------------------------------------- */
+/* --- Badge Styling (AI-Powered Student Assistant) --- */
+/* ---------------------------------------------------- */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 8px 15px;
+    border-radius: 20px; /* Highly rounded corners */
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    /* Subtle glow to match the futuristic feel */
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); 
+}
+
+.badge .icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+
+/* ---------------------------------------------------- */
+/* --- Heading Styling (Your Academic Success, ...) --- */
+/* ---------------------------------------------------- */
+
+.hero h1 {
+    font-size: 70px; 
+    font-weight: 900; /* Very bold to match the image */
+    line-height: 1.1;
+    margin: 0 0 20px 0; /* Add margin below the main heading */
+}
+
+/* ❗ Gradient Text Effect for "Simplified & Intelligent" ❗ */
+.hero h1 .highlight {
+    /* 1. Define the gradient as the background */
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    
+    /* 2. Clip the background to the shape of the text */
+    -webkit-background-clip: text; 
+    background-clip: text;
+    
+    /* 3. Make the text color transparent */
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* Fallback */
+    
+    /* Ensures the highlighted part is on a new line */
+    display: block; 
+}
+
+
+/* ---------------------------------------------------- */
+/* --- Subtitle Styling (Consolidate timetables, ...) --- */
+/* ---------------------------------------------------- */
+
+.hero-text {
+    margin-top: 0; /* Adjusted since margin is on h1 */
+    font-size: 18px; 
+    max-width: 650px; /* Controls the line length */
+    line-height: 1.6; 
+    color: var(--subtitle-text-color);
+}
+
+.next-btn {
+    position: fixed;
+    bottom: 60px; 
+    right: 60px;  
+    padding: 16px 32px; 
+    font-size: 22px;    
+    font-weight: 600;
+    text-decoration: none;
+
+    /* Enhanced Box Styling */
+    background-color: rgba(255, 255, 255, 0.15); /* more solid box */
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* stronger shadow for visibility */
+    backdrop-filter: blur(5px); /* slight glass effect */
+    display: inline-block;
+
+    /* Gradient text */
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.next-btn:hover {
+    transform: translateY(-3px);
+    opacity: 1;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); /* stronger hover shadow */
+    background-color: rgba(255, 255, 255, 0.2); /* brighter box on hover */
+}

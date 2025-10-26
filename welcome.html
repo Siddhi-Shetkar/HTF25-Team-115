@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome - AI Assistant Dashboard</title>
+    <link rel="stylesheet" href="welcome.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        
+        <div class="welcome-banner">
+            <h1 id="welcomeMessage"></h1>
+            <p>Welcome to <strong>AI-Integrated Student Assistant</strong></p>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="summary-row">
+                <div class="stat-card completed">
+                    <div class="stat-content">
+                        <p class="stat-value">0</p>
+                        <p class="stat-label">Completed</p>
+                    </div>
+                    <span class="material-icons check-icon">check_circle</span>
+                </div>
+
+                <div class="stat-card in-progress">
+                    <div class="stat-content">
+                        <p class="stat-value">0</p>
+                        <p class="stat-label">In Progress</p>
+                    </div>
+                    <span class="material-icons time-icon">access_time</span>
+                </div>
+
+                <div class="stat-card pending">
+                    <div class="stat-content">
+                        <p class="stat-value">0</p>
+                        <p class="stat-label">Pending</p>
+                    </div>
+                    <span class="material-icons warning-icon">warning</span>
+                </div>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card large">
+                    <div class="icon-header">
+                        <span class="material-icons icon-bg-blue">calendar_today</span>
+                        <span class="count">8</span>
+                    </div>
+                    <h3>Smart Timetable</h3>
+                    <p>View your schedule with intelligent conflict detection and sync across devices.</p>
+                </div>
+                
+                <div class="feature-card large">
+                    <div class="icon-header">
+                        <span class="material-icons icon-bg-purple">assignment</span>
+                        <span class="count">0</span>
+                    </div>
+                    <h3>Assignments</h3>
+                    <p>Track submissions, deadlines, and get AI-powered completion suggestions.</p>
+                </div>
+
+                <div class="feature-card large">
+                    <div class="icon-header">
+                        <span class="material-icons icon-bg-light">book</span>
+                        <span class="count">0</span>
+                    </div>
+                    <h3>Lecture Materials</h3>
+                    <p>Access all your study materials with AI summarization and search.</p>
+                </div>
+
+                <div class="feature-card small">
+                    <div class="icon-header">
+                        <span class="material-icons icon-bg-blue">donut_large</span>
+                        <span class="count">0</span>
+                    </div>
+                    <h3>Project Deadlines</h3>
+                    <p>Never miss a deadline with smart notifications and progress tracking.</p>
+                </div>
+
+                <div class="feature-card small ai-assistant-card">
+                    <div class="icon-header">
+                        <span class="material-icons icon-bg-dark">code</span>
+                    </div>
+                    <h3>AI Assistant</h3>
+                    <p>Voice and chat based help for quick answers, summaries, and guidance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve user name stored from sign-up
+        const name = localStorage.getItem("userName") || "there";
+        document.getElementById("welcomeMessage").textContent = `Hello ${name},`;
+    </script>
+</body>
+</html>
