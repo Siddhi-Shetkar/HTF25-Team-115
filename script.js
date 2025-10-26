@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotView = document.getElementById('chatbot-view');
     const tasksView = document.getElementById('tasks-view');
 
-    if (navChat) {
+        // Only execute view-switching code if all required elements exist
+        if (navChat && navTasks && chatbotView && tasksView) {
         navChat.addEventListener('click', () => {
             chatbotView.classList.remove('hidden');
             chatbotView.classList.add('flex');
@@ -134,9 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             navChat.classList.add('text-blue-600', 'border-blue-600', 'border-b-2');
             navTasks.classList.remove('text-blue-600', 'border-blue-600', 'border-b-2');
         });
-    }
 
-    if (navTasks) {
         navTasks.addEventListener('click', () => {
             chatbotView.classList.add('hidden');
             chatbotView.classList.remove('flex');

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Material & AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="stylesheet" href="lecture-material.css">
+</head>
+<body class="font-sans bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col" style="height: 85vh;">
+        
+        <nav class="flex border-b border-gray-200">
+            <button id="nav-chat" class="flex-1 p-4 text-center font-semibold text-blue-600 border-b-2 border-blue-600">
+                AI Assistant
+            </button>
+            <button id="nav-lecture" class="flex-1 p-4 text-center font-semibold text-gray-500 hover:text-blue-600">
+                Lecture Material
+            </button>
+        </nav>
+
+        <div class="flex-grow overflow-hidden">
+            <div id="chatbot-view" class="flex flex-col h-full">
+                <div class="bg-blue-600 text-white p-4 shadow-md">
+                    <h1 class="text-2xl font-bold text-center">My AI Assistant</h1>
+                </div>
+
+                <div id="chat-window" class="flex-grow p-6 space-y-4 overflow-y-auto">
+                    <div class="flex justify-start">
+                        <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-xs md:max-w-md shadow">
+                            <p>Hello! How can I help you with your lecture materials today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="typing-indicator" class="p-4 text-gray-500 italic hidden">
+                    <p>AI is typing...</p>
+                </div>
+
+                <div class="border-t border-gray-200 p-4 bg-white">
+                    <div class="flex space-x-3">
+                        <input 
+                            type="text" 
+                            id="message-input" 
+                            placeholder="Type your message..." 
+                            class="flex-grow border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                        >
+                        <button 
+                            id="send-button"
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lecture-view" class="hidden flex-col h-full p-6">
+                <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Lecture Material</h1>
+                
+                <!-- File Upload Area with Drag & Drop -->
+                <div id="drop-zone" class="mb-6 p-8 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50">
+                    <div class="flex flex-col items-center space-y-4">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <div class="text-gray-600">
+                            <p class="font-semibold">Drag and drop your files here</p>
+                            <p class="text-sm">or</p>
+                        </div>
+                        <label for="file-input" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition duration-200">
+                            Browse Files
+                        </label>
+                        <input 
+                            type="file" 
+                            id="file-input" 
+                            accept=".txt,.pdf,.doc,.docx"
+                            class="hidden"
+                            multiple
+                        >
+                        <p class="text-sm text-gray-500">Supported files: PDF, TXT, DOC, DOCX</p>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div id="file-list" class="mb-6 space-y-3">
+                    <!-- Files will be listed here dynamically -->
+                </div>
+
+                <!-- Summary Section -->
+                <div id="summary-section" class="hidden">
+                    <button 
+                        id="summarize-btn"
+                        class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 mb-4"
+                    >
+                        Generate Summary
+                    </button>
+
+                    <div id="summarizer-loading" class="hidden text-center p-4">
+                        <div class="inline-flex items-center">
+                            <svg class="animate-spin h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-gray-600">Processing lecture material...</p>
+                        </div>
+                    </div>
+
+                    <div id="summary-container" class="mt-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Summary:</h3>
+                        <div 
+                            id="summary-output"
+                            class="bg-white border border-gray-200 rounded-lg p-4 whitespace-pre-wrap overflow-y-auto max-h-96 shadow-inner"
+                        >
+                            Select a file and click 'Generate Summary' to see the AI-generated summary here...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="lecture-material.js"></script>
+</body>
+</html>
